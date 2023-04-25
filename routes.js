@@ -30,7 +30,11 @@ router.post('/postbyid', LRS.authenticateToken, Service.getPhotoById)
 
 router.get('/photo', LRS.authenticateToken, Service.getPhotos)
 
-router.post('/login', LRS.login);
+router.post('/login', LRS.login)
+
+router.get('/profile', Service.getProfile)
+router.post('/profile', Service.createProfile)
+
 
 
 module.exports = router

@@ -89,6 +89,7 @@ let register = async (req, res) => {
         }
 
         let saveUser = await user.save();
+
         res.send(saveUser)
 
     } catch (err) {

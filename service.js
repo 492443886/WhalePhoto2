@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const User = require('./model/user');
 const Post = require('./model/post');
 const Photo = require('./model/photo');
+const Profile = require('./model/profile');
 const LRS = require('./LRServiceServer')
 const mongoose = require('mongoose');
 
@@ -172,6 +173,57 @@ let getPhotos = async (req, res) => {
     }
 }
 
+let createProfile = async (req, res) => {
+
+    try {
+
+        let body = req.body.user
+        // console.log(body)
+        // console.log("createProflile")
+
+        let profile = await Profile.findOne({ user: body.user }).exec()
+        console.log(profile)
+        if (profile === null) {
+            profile = new Profile(req.body)
+        } else {
+
+            profile.icon = body.icon
+            profile.description = body.description
+            profile.email = body.email
+            profile.location = body.location
+            profile.hobby = body.hobby
+            profile.food = body.food
+            profile.birth_year = body.birth_year
+        }
+
+        const profileS = await profile.save()
+
+        res.send(profileS)
+
+    } catch (err) {
+        console.log('err' + err);
+        res.status(500).send(err);
+    }
+
+}
+let getProfile = async (req, res) => {
+
+    try {
+
+        let TheUser = req.query.user
+        //let body = req.body
+        console.log(TheUser)
+        const profile = await Profile.findOne({ user: TheUser }).exec()
+        res.send(profile)
+
+    } catch (err) {
+        console.log('err' + err);
+        res.status(500).send(err);
+    }
+}
+
+
+
 
 let getPosts = async (req, res) => {
 
@@ -192,9 +244,12 @@ let getPhotoById = async (req, res) => {
 
     try {
         let body = req.body
+
+        console.log("getbyid" + body)
+        console.log(body)
         // const photos = await Photo.find({ _id: { $in: res.body } }).exec()
         const photos = await Photo.find({ _id: { $in: body } }).exec()
-
+        // console.log(photo[0].user)
         res.send(photos)
 
     } catch (err) {
@@ -231,14 +286,14 @@ let commetPost = async (req, res) => {
 
 
 module.exports = {
-    // register,
-    // login,
-    // authenticateToken,
     makePost,
     makePhoto,
     getPhotos,
     getPosts,
     deletePhoto,
     getPhotoById,
-    commetPost
+    commetPost,
+
+    createProfile,
+    getProfile
 }
