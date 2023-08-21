@@ -7,13 +7,16 @@ const LRS = require('./LRServiceServer')
 
 const SECRET = "SECRET"
 
-router.post('/register', LRS.register);
+
 
 
 router.get('/data', (req, res) => {
 
     res.send("This is data!!")
 })
+
+
+router.post('/register', LRS.register);
 
 router.post('/post', LRS.authenticateToken, Service.makePost)
 
@@ -33,6 +36,7 @@ router.get('/photo', LRS.authenticateToken, Service.getPhotos)
 router.post('/login', LRS.login)
 
 router.get('/profile', Service.getProfile)
+
 router.post('/profile', Service.createProfile)
 
 

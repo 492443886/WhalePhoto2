@@ -1,14 +1,13 @@
-const express = require('express')
-const jwt = require('jsonwebtoken')
-const User = require('./model/user');
-const Post = require('./model/post');
-const Photo = require('./model/photo');
-const Profile = require('./model/profile');
-const LRS = require('./LRServiceServer')
-const mongoose = require('mongoose');
+const express = require("express")
+const jwt = require("jsonwebtoken")
+const User = require("./model/user")
+const Post = require("./model/post")
+const Photo = require("./model/photo")
+const Profile = require("./model/profile")
+const LRS = require("./LRServiceServer")
+const mongoose = require("mongoose")
 
 // const SECRET = "SECRET"
-
 
 // let register = async (req, res) => {
 
@@ -88,8 +87,6 @@ const mongoose = require('mongoose');
 //     return jwt.sign(user, SECRET, { expiresIn: '2000s' })
 // }
 
-
-
 // {
 //     photos: [],
 //     ?username: 'test',
@@ -98,202 +95,170 @@ const mongoose = require('mongoose');
 // }
 
 let makePost = async (req, res) => {
-
-    try {
-        let auser = req.auser
-        let p = req.body
-        p.username = auser.username
-        const post = new Post(p);
-        let savePost = await post.save();
-        res.send(savePost)
-    } catch (err) {
-        console.log('err' + err);
-        res.status(500).send(err);
-    }
+  try {
+    let auser = req.auser
+    let p = req.body
+    p.username = auser.username
+    const post = new Post(p)
+    let savePost = await post.save()
+    res.send(savePost)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(500).send(err)
+  }
 }
 
 let makePhoto = async (req, res) => {
+  try {
+    console.log(req.headers)
+    let auser = req.auser
+    let p = req.body
 
-    try {
+    //console.log(p)
 
-        console.log(req.headers)
-        let auser = req.auser
-        let p = req.body
-
-        //console.log(p)
-
-        p.user = auser.username
-        const post = new Photo(p);
-        let savePost = await post.save();
-        res.send(savePost)
-    } catch (err) {
-        console.log('err' + err);
-        res.status(400).send(err);
-    }
+    p.user = auser.username
+    const post = new Photo(p)
+    let savePost = await post.save()
+    res.send(savePost)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(400).send(err)
+  }
 }
 
 let deletePhoto = async (req, res) => {
+  try {
+    console.log("hitted")
+    //console.log(req.headers)
+    let auser = req.auser
+    let id = req.body
 
-    try {
+    console.log(id)
 
-        console.log('hitted')
-        //console.log(req.headers)
-        let auser = req.auser
-        let id = req.body
+    //const post = new Photo(p);
 
-        console.log(id)
+    let result = await Photo.deleteOne(id)
 
-        //const post = new Photo(p);
-
-        let result = await Photo.deleteOne(id);
-
-        //console.log(result)
-        res.send(result)
-    } catch (err) {
-        console.log('err' + err);
-        res.status(400).send(err);
-    }
+    //console.log(result)
+    res.send(result)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(400).send(err)
+  }
 }
 
-
 let getPhotos = async (req, res) => {
+  try {
+    let auser = req.auser
+    let username = auser.username
+    const photos = await Photo.find({ user: username }).exec()
 
-    try {
-
-
-        let auser = req.auser
-        let username = auser.username
-        const photos = await Photo.find({ "user": username }).exec()
-
-        res.send(photos)
-
-    } catch (err) {
-        console.log('err' + err);
-        res.status(500).send(err);
-    }
+    res.send(photos)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(500).send(err)
+  }
 }
 
 let createProfile = async (req, res) => {
+  try {
+    let body = req.body.user
+    // console.log(body)
+    // console.log("createProflile")
 
-    try {
-
-        let body = req.body.user
-        // console.log(body)
-        // console.log("createProflile")
-
-        let profile = await Profile.findOne({ user: body.user }).exec()
-        console.log(profile)
-        if (profile === null) {
-            profile = new Profile(req.body)
-        } else {
-
-            profile.icon = body.icon
-            profile.description = body.description
-            profile.email = body.email
-            profile.location = body.location
-            profile.hobby = body.hobby
-            profile.food = body.food
-            profile.birth_year = body.birth_year
-        }
-
-        const profileS = await profile.save()
-
-        res.send(profileS)
-
-    } catch (err) {
-        console.log('err' + err);
-        res.status(500).send(err);
+    let profile = await Profile.findOne({ user: body.user }).exec()
+    console.log(profile)
+    if (profile === null) {
+      profile = new Profile(req.body)
+    } else {
+      profile.icon = body.icon
+      profile.description = body.description
+      profile.email = body.email
+      profile.location = body.location
+      profile.hobby = body.hobby
+      profile.food = body.food
+      profile.birth_year = body.birth_year
     }
 
+    const profileS = await profile.save()
+
+    res.send(profileS)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(500).send(err)
+  }
 }
 let getProfile = async (req, res) => {
-
-    try {
-
-        let TheUser = req.query.user
-        //let body = req.body
-        console.log(TheUser)
-        const profile = await Profile.findOne({ user: TheUser }).exec()
-        res.send(profile)
-
-    } catch (err) {
-        console.log('err' + err);
-        res.status(500).send(err);
-    }
+  try {
+    let TheUser = req.query.user
+    //let body = req.body
+    console.log(TheUser)
+    const profile = await Profile.findOne({ user: TheUser }).exec()
+    res.send(profile)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(500).send(err)
+  }
 }
 
-
-
-
 let getPosts = async (req, res) => {
+  try {
+    const posts = await Post.find().exec()
 
-    try {
-
-        const posts = await Post.find().exec()
-
-        res.send(posts)
-
-    } catch (err) {
-        console.log('err' + err);
-        res.status(500).send(err);
-    }
+    res.send(posts)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(500).send(err)
+  }
 }
 
 // res.body is [...] of post
 let getPhotoById = async (req, res) => {
+  try {
+    let body = req.body
 
-    try {
-        let body = req.body
-
-        console.log("getbyid" + body)
-        console.log(body)
-        // const photos = await Photo.find({ _id: { $in: res.body } }).exec()
-        const photos = await Photo.find({ _id: { $in: body } }).exec()
-        // console.log(photo[0].user)
-        res.send(photos)
-
-    } catch (err) {
-        console.log('err' + err);
-        res.status(500).send(err);
-    }
+    console.log("getbyid" + body)
+    console.log(body)
+    // const photos = await Photo.find({ _id: { $in: res.body } }).exec()
+    const photos = await Photo.find({ _id: { $in: body } }).exec()
+    // console.log(photo[0].user)
+    res.send(photos)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(500).send(err)
+  }
 }
 
 let commetPost = async (req, res) => {
+  try {
+    let body = req.body
+    console.log(body)
+    let id = body._id
+    console.log(id)
 
-    try {
+    // let result = await Post.updateOne({ _id: id }, { $push: { comments: 'rr' } }).exec()
 
-        let body = req.body
-        console.log(body)
-        let id = body._id
-        console.log(id)
+    let p = await Post.findById(id)
+    p.comments.push({ user: req.auser.username, comment: body.comment })
+    await p.save()
 
-        // let result = await Post.updateOne({ _id: id }, { $push: { comments: 'rr' } }).exec()
-
-
-        let p = await Post.findById(id)
-        p.comments.push({ user: req.auser.username, comment: body.comment })
-        await p.save()
-
-        console.log(p)
-        res.sendStatus(202)
-
-    } catch (err) {
-        console.log('err' + err);
-        res.status(500).send(err);
-    }
+    console.log(p)
+    res.sendStatus(202)
+  } catch (err) {
+    console.log("err" + err)
+    res.status(500).send(err)
+  }
 }
 
-
-
 module.exports = {
-    makePost,
-    makePhoto,
-    getPhotos,
-    getPosts,
-    deletePhoto,
-    getPhotoById,
-    commetPost,
+  makePost,
+  makePhoto,
+  getPhotos,
+  getPosts,
+  deletePhoto,
+  getPhotoById,
+  commetPost,
 
-    createProfile,
-    getProfile
+  createProfile,
+  getProfile,
 }
